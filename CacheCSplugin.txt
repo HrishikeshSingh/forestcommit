@@ -1,0 +1,50 @@
+<?xml version="1.0" ?>
+<RoleModule 
+  xmlns="http://schemas.microsoft.com/ServiceHosting/2008/10/ServiceDefinition"
+  namespace="Microsoft.WindowsAzure.Plugins.Caching">
+  <Startup priority="-2">
+    <Task commandLine="DotNetUpdate.cmd" executionContext="elevated" taskType="simple">
+     <Environment>
+      <Variable name="IsEmulated">
+        <RoleInstanceValue xpath="/RoleEnvironment/Deployment/@emulated" />
+      </Variable>
+      <Variable name="CachingLocalStorePath">
+        <RoleInstanceValue xpath="/RoleEnvironment/CurrentInstance/LocalResources/LocalResource[@name='DiagnosticStore']/@path" />
+      </Variable>
+     </Environment>
+    </Task>
+    <Task commandLine="CacheInstaller.exe" executionContext="elevated" taskType="simple" />
+  </Startup>
+  <ConfigurationSettings>
+    <Setting name="NamedCaches" />
+    <Setting name="DiagnosticLevel" />
+    <Setting name="CacheSizePercentage" />
+    <Setting name="ConfigStoreConnectionString" />
+    <Setting name="Acs.TokenSigningKey" />
+    <Setting name="Acs.AdditionalTokenSigningKey" />
+    <Setting name="Acs.TokenAudience" />
+    <Setting name="Acs.TokenIssuerName" />
+    <!--<Setting name="SslCertificateSubjectName" />-->
+  </ConfigurationSettings>
+  <Endpoints>
+    <InternalEndpoint name="cacheClusterPort" protocol="tcp" />
+    <InternalEndpoint name="cacheArbitrationPort" protocol="tcp" />
+    <InternalEndpoint name="cacheReplicationPort" protocol="tcp" />
+    <InternalEndpoint name="cacheServicePortInternal" protocol="tcp" />
+    <InstanceInputEndpoint name="cacheSocketPort" protocol="tcp" localPort="22233">
+      <AllocatePublicPortFrom>
+        <FixedPortRange max="22265" min="22233" />
+      </AllocatePublicPortFrom>
+    </InstanceInputEndpoint>
+    <InputEndpoint name="cacheDiscoveryPort" protocol="tcp" port="24233" />
+    <InstanceInputEndpoint name="cacheSslSocketPort" protocol="tcp" localPort="22433">
+      <AllocatePublicPortFrom>
+        <FixedPortRange max="22465" min="22433" />
+      </AllocatePublicPortFrom>
+    </InstanceInputEndpoint>
+    <InputEndpoint name="cacheSslDiscoveryPort" protocol="tcp" port="24433" />
+  </Endpoints>
+  <!--<Certificates>
+    <Certificate name="SslCertificate" storeLocation="LocalMachine" storeName="My" />
+  </Certificates>-->
+</RoleModule>
